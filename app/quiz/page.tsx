@@ -131,8 +131,8 @@ export default function QuizPage() {
         }
     };
 
-    const handleUpdate = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleUpdate = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         if (!editingQuiz) return;
         setIsLoading(true);
 
