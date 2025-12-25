@@ -38,7 +38,7 @@ export default function AuthPage() {
             } else {
                 await authService.signup(formData);
             }
-            router.push('/home');
+            router.push('/');
         } catch (err: any) {
             setError(err.response?.data?.message || `Failed to ${activeTab}`);
         } finally {
