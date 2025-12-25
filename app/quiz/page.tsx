@@ -68,7 +68,7 @@ export default function QuizPage() {
     const fetchQuizzes = async () => {
         setIsLoading(true);
         try {
-            const response = await api.get('/admin/quizzes');
+            const response = await api.get('/v1/admin/quizzes');
             setQuizzes(response.data);
         } catch (error) {
             console.error('Failed to fetch quizzes:', error);
@@ -81,7 +81,7 @@ export default function QuizPage() {
         setIsFetchingDetails(true);
         try {
             // Fetch full details including questions
-            const response = await api.get(`/admin/quizzes/${quiz.id}`);
+            const response = await api.get(`/v1/admin/quizzes/${quiz.id}`);
             const detailedQuiz = response.data;
 
             // Transform backend structure if needed (e.g. map choices)
@@ -119,7 +119,7 @@ export default function QuizPage() {
 
         setIsDeleting(id);
         try {
-            await api.delete(`/admin/quizzes/${id}`);
+            await api.delete(`/v1/admin/quizzes/${id}`);
             setQuizzes(quizzes.filter(q => q.id !== id));
             setStatus({ type: 'success', message: 'Quiz deleted successfully' });
         } catch (error) {
@@ -174,14 +174,14 @@ export default function QuizPage() {
                         ...q,
                         choices: [
                             ...q.choices,
-                            ...deletedChoicesForThisQ.map(cid => ({ id: cid, text: '', order: 0, isCorrect: false, _delete: true }))
+                            ...deletedChoicesForThisQ.map(cid => ({ id: cid, text: '', order: 0, _delete: true }))
                         ]
                     };
                 }
                 return q;
             });
 
-            await api.put(`/admin/quizzes/${editingQuiz.id}`, {
+            await api.put(`/v1/admin/quizzes/${editingQuiz.id}`, {
                 title: editingQuiz.title,
                 description: editingQuiz.description,
                 subject: editingQuiz.subject,
@@ -199,6 +199,7 @@ export default function QuizPage() {
                         text: c.text,
                         order: Number(c.order),
                         _delete: c._delete
+                        // Note: isCorrect is NOT sent - backend uses correctChoiceIndexes instead
                     })),
                     correctChoiceIndexes: q.correctChoiceIndexes,
                     _delete: q._delete
@@ -313,7 +314,7 @@ export default function QuizPage() {
         const formData = new FormData();
         formData.append('file', file);
         try {
-            const response = await api.post('/quizzes/upload', formData, {
+            const response = await api.post('/v1/admin/quizzes/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             const count = Array.isArray(response.data) ? response.data.length : 0;
